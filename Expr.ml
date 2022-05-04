@@ -41,10 +41,16 @@ let rec typ_is_alive grave typ =
     match typ with
     | Int                  -> None
     | Tuple typs           -> List.find_map (typ_is_alive grave) typs
-    | Borrow(_, tok, typ') ->
-        match acc_readable (Access.access_of_token tok) grave with
+    | IBorrow(tok, typ') ->
+        begin match acc_readable (Access.access_of_token tok) grave with
         | Some reason -> Some reason
         | None        -> typ_is_alive grave typ'
+        end
+    | MBorrow(tok, typ_r, typ_w) ->
+        begin match acc_readable (Access.access_of_token tok) grave with
+        | Some reason -> Some reason
+        | None        -> typ_is_alive grave typ_r
+        end
 
 let respawn_acc acc grave =
     grave |> List.filter @@ fun (acc', reason) ->
@@ -112,7 +118,7 @@ let rec check env (cset, grave) expr =
             | Some typ -> typ
             | None     -> raise(UnboundVariable var)
         in
-        let (allowed_perm, ptyp) =
+        let (allowed_perm, ptyp_r, ptyp_w) =
             try Type.read_path sels vtyp with
               Type.InvalidPath(sels', typ') ->
                 let l1 = List.length sels in
@@ -134,11 +140,15 @@ let rec check env (cset, grave) expr =
         in
 
         begin match perm with
-        | POwner -> ( ptyp, env, (cset, (acc, op) :: grave) )
+        | POwner -> ( ptyp_r, env, (cset, (acc, op) :: grave) )
         | PBorrow mut ->
             let tok = Access.gen_token () in
-            ( Type.Borrow(mut, tok, ptyp)
-            , env
+            let res_typ =
+                match mut with
+                | Imm -> Type.IBorrow(tok, ptyp_r)
+                | Mut -> Type.MBorrow(tok, ptyp_r, ptyp_w)
+            in
+            ( res_typ, env
             , ( Access.add_constr
                     Access.{ borrower = tok
                            ; kind     = mut
@@ -167,16 +177,16 @@ let rec check env (cset, grave) expr =
         let csetr = ref cset in
         let graver = ref grave in
         let var_typ' =
-            Type.write_path begin fun allowed_mut pacc ptyp ->
-                match allowed_mut, pacc with
-                | Imm, _      -> raise(PermissionDenied op)
-                | _  , Some _ ->
-                    csetr := Type.subtyp !csetr vtyp ptyp;
-                    ptyp
-                | _  , None   ->
+            Type.write_path begin fun perm ptyp ->
+                match perm with
+                | POwner      ->
                     Type.shape_eq ptyp vtyp;
                     graver := respawn_acc acc !graver;
                     vtyp
+                | PBorrow Mut ->
+                    csetr := Type.subtyp !csetr vtyp ptyp;
+                    ptyp
+                | PBorrow Imm -> raise(PermissionDenied op)
             end sels var_typ
         in
         ( Type.Int, Env.add var var_typ' env, (!csetr, !graver) )

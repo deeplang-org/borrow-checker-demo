@@ -565,7 +565,9 @@ let tests = Access.[
        let _ = x;
        let _ = iy;
        0"
-    , access_dead_path (OpMove("iy", [])) (OpMove("x", [])) );
+    (* This one is now precise! *)
+    (* , access_dead_path (OpMove("iy", [])) (OpMove("x", [])) ); *)
+    , None );
     ( "branch/imm-covariant-precise"
     , "let x = 1;
        let y = 2;
