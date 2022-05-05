@@ -1,0 +1,6 @@
+(executable
+ (name checker_js)
+ (modes js)
+ (libraries checker js_of_ocaml)
+ (preprocess (pps js_of_ocaml-ppx))
+ (modules checker_js))

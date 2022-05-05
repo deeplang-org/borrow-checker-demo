@@ -3,6 +3,7 @@
 ## Building and Running
 This repository has the following dependencies:
 
+- `make`
 - `ocaml`, tested on `4.12.0`, but `4.7+` should be aqequate
 - `dune 2.x`, tested on `2.8.5`
 
@@ -11,28 +12,27 @@ to setup the necessary dependencies.
 
 There are also some optional dependencies:
 
+- `js_of_ocaml` and `js_of_ocaml-ppx`, for a HTML demo
 - (WIP) `odoc`, for generating API document
-- (WIP) `js_of_ocaml` and `js_of_ocaml-ppx`, for a HTML demo
 
-To build the repository, do one of the following:
-```
-make build
-dune build
-```
+To build this repository, do one of the following:
+- `make`, to build everything.
+- `make build`, to build everything except for API doc.
+- `make checker`, to build the OCaml checker library only
+- `make demo`, to build the HTML demo.
+You can play with the demo in `demo/demo.html` afterwards.
+- `make doc`, to build the API doc.
 
-Note that currently the HTML demo is not finished yet.
-So there is nothing runnable,
-only a rich set of tests and a library offering borrow checker functionalities.
 
 ## Document
 API document is WIP.
 Here's a brief introduction of the files:
 
-- `Access.ml`: introducing the concept of "access",
+- `checker/Access.ml`: introducing the concept of "access",
 with borrow constraint between access
 and a data structure for a set of access constraints.
-- `Type.ml`: definition of and operations on types in the demo language
-- `Expr.ml`: definition of the demo language's expressions,
+- `checker/Type.ml`: definition of and operations on types in the demo language
+- `checker/Expr.ml`: definition of the demo language's expressions,
 and the main borrow-checking function.
-- `checker_test.ml`: a rich set of tests.
-You can run them with `dune test` or `dune exec ./checker_test.exe`.
+- `checker/checker_test.ml`: a rich set of tests.
+You can run them with `make test`.

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <header>
+        <style>
+            tt b {
+                color: rgb(255, 128, 0);
+            }
+            tt i {
+                color: rgb(0, 128, 255);
+            }
+        </style>
+    </header>
+    <body>
+        <h1>demo语言文档</h1>
+        <h2>类型</h2>
+        <ul>
+            <li>整数类型：<tt><b>Int</b></tt>，有非负整数字面量</li>
+            <li>
+            tuple类型：<tt><b>(</b><i>Ts</i><b>)</b></tt>，
+            其中<tt><i>Ts</i></tt>是一个以逗号分隔的类型列表
+            </li>
+            <li>
+            借用类型：<tt><b>&</b><i>T</i></tt>（共享/只读借用）
+            或<tt><b>&mut</b> <i>T</i></tt>（独占/读写借用），
+            其中<tt>T</tt>是一个类型。
+            借用类型的含义是<b>只有受限的使用权限的指针</b>
+        </ul>
+        <h2>表达式的语法</h2>
+        本demo中的语言只有表达式，没有语句。
+        它主要用于演示borrow checker，
+        所以设计上和borrow checker无关的部分能简则简，
+        请不要用看待正常语言的眼光来看它>_<：
+        <ul>
+            <li>非负整数字面量</li>
+            <li>
+            定义变量：<tt><b>let</b> <i>name</i> <b>=</b> <i>expr</i><b>;</b> ...</tt>，
+            必须有定义后的body，暂不支持类型标注
+            </li>
+            <li>
+            顺序执行：<tt><i>expr1</i><b>;</b> <i>expr2</i></tt>，
+            等价于<tt><b>let</b> _ <b>=</b> <i>expr1</i><b>;</b> <i>expr2</i></tt>。
+            变量名必须以小写字母或下划线开头
+            </li>
+            <li>
+            默认对变量的使用是移动：<tt><i>path</i></tt>。
+            其中<tt><i>path</i></tt>是一条路径，可能是：
+                <ul>
+                    <li>一个变量<tt><i>x</i></tt></li>
+                    <li>
+                    一个tuple的路径的一部分<tt><i>path</i><b>.</b><i>i</i></tt>，
+                    其中<tt><i>i</i></tt>是一个自然数下标，
+                    用于选择tuple中的第<tt><i>i</i></tt>个元素
+                    </li>
+                    <li>
+                    一个借用指向的数据<tt><i>*path</i></tt>，
+                    对借用的解引用在语法上的优先级低于tuple下标
+                    </li>
+                </ul>
+            </li>
+            <li>
+            借用：<tt><b>&</b><i>path</i></tt>（共享/只读借用）
+            或<tt><b>&mut</b> <i>path</i></li></tt>（独占/读写借用）
+            </li>
+            <li>赋值：<tt><i>path</i> <b>:=</b> <i>rhs</i></tt></li>
+            <li>tuple：<tt><b>(</b><i>exprs</i><b>)</b></tt>，
+            其中<tt><i>exprs</i></tt>是以逗号分隔的一串表达式。
+            括号是不能省略的的
+            </li>
+            <li>
+            条件表达式：<tt><b>if</b> <i>condition</i> <b>then</b> <i>conseq</i> <b>else</b> <i>alter</i></tt>。
+            其中<tt><i>condition</i></tt>是一个整数，
+            它是否等于0就是<tt><b>if</b></tt>的判断条件。
+            <tt><i>conseq</i></tt>是条件不为0时执行的分支，
+            <tt><i>alter</i></tt>是条件为0时执行的分支。
+            <tt><b>if</b></tt>的两个分支的优先级低于<tt><b>let</b></tt>，
+            所以在里面放变量定义需要加括号
+    </body>
+</html>
