@@ -201,21 +201,3 @@ let instantiate_function func_typ =
     in
     { args = List.map map_typ func_typ.args
     ; ret  = map_typ func_typ.ret }
-
-
-
-
-let rec pp_typ fmt typ =
-    let open Format in
-    match typ with
-    | Int ->
-        fprintf fmt "Int" 
-    | Tuple typs ->
-        fprintf fmt "(@[<hov2>%a@])"
-            (pp_print_list ~pp_sep:(fun fmt () -> fprintf fmt ",@ ")
-                            pp_typ)
-            typs
-    | IBorrow(_, typ') ->
-        fprintf fmt "&%a" pp_typ typ'
-    | MBorrow( _, typ', _) ->
-        fprintf fmt "&mut %a" pp_typ typ'

@@ -81,7 +81,7 @@ simple_path_rev :
        { ($1, []) }
     | simple_path_rev DOT INT
        { let (var, sels) = $1 in
-         (var, Access.Field $3 :: sels) }
+         (var, Access.Field ($3 - 1) :: sels) }
     | LPAREN path_rev RPAREN
        { $2 }
 ;

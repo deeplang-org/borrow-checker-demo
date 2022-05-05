@@ -1,0 +1,11 @@
+(library
+ (name checker)
+ (modules Access Type Expr Parser Lexer Pretty))
+
+(ocamllex Lexer)
+(ocamlyacc Parser)
+
+(test
+ (name checker_test)
+ (libraries checker)
+ (modules checker_test))

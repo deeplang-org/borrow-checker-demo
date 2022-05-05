@@ -5,70 +5,18 @@ let expr_of_lexbuf  lexbuf = Parser.top Lexer.token lexbuf
 let expr_of_string  src    = expr_of_lexbuf (Lexing.from_string src)
 let expr_of_channel ch     = expr_of_lexbuf (Lexing.from_channel ch)
 
-
-let rec string_of_path (mode : [`Big | `Small]) (var, sels) =
-    match mode, sels with
-    | mode, [] -> var
-    | _, Access.Deref :: sels' ->
-        string_of_path `Big ("*" ^ var, sels')
-    | `Big, Access.Field k :: sels' ->
-        string_of_path `Small ("(" ^ var ^ ")." ^ string_of_int k, sels')
-    | `Small, Access.Field k :: sels' ->
-        string_of_path `Small (var ^ "." ^ string_of_int k, sels')
-
-let rec pp_path fmt (var, sels) =
-    Format.fprintf fmt "%s" (string_of_path `Small (var, sels))
-
-let pp_op fmt op =
-    let open Expr in
-    let open Format in
-    match op with
-    | OpMove path ->
-        fprintf fmt "moving %a" pp_path path
-    | OpBorrow(Access.Imm, path) ->
-        fprintf fmt "borrowing %a immutably" pp_path path
-    | OpBorrow(Access.Mut, path) ->
-        fprintf fmt "borrowing %a mutably" pp_path path
-    | OpAssign path ->
-        fprintf fmt "assignment to %a" pp_path path
-    | OpScope name ->
-        fprintf fmt "%s going out of scope" name
-    | OpReturn func ->
-        fprintf fmt "returning from function %s" func
-    | OpResultLet ->
-        fprintf fmt "returning result of let-expression"
-
-let pp_error fmt exn =
-    let open Format in
-    match exn with
-    | Expr.UnboundVariable var ->
-        fprintf fmt "unbound variable %s" var
-    | Expr.AccessDeadPath(bad, reason) ->
-        fprintf fmt "@[<hv2>failed %a, due to %a@]"
-            pp_op bad pp_op reason
-    | Expr.PermissionDenied op ->
-        fprintf fmt "no enough permission for %a" pp_op op
-    | Expr.InvalidPath(path, typ, Access.Deref :: _) ->
-        fprintf fmt "cannot deref %a : %a"
-            pp_path path Type.pp_typ typ
-    | Expr.InvalidPath(path, typ, Access.Field k :: _) ->
-        fprintf fmt "no such field \"%d\" in %a : %a"
-            k pp_path path Type.pp_typ typ
-    | _ ->
-        fprintf fmt "fatal error %s" (Printexc.to_string exn)
-
 let run_test (label, src, expected) =
     let open Format in
     let expr = expr_of_string src in
     match Expr.check Expr.Env.empty (Access.empty_cset, []) expr with
-    | res_typ ->
+    | _ ->
         begin match expected with
         | None ->
             printf "test %s: passed@ " label;
             true
         | Some exn ->
             printf "@[<v2>test %s: failed@ " label;
-            printf "expected result: %a@ " pp_error exn;
+            printf "expected result: %a@ " Pretty.pp_error exn;
             printf "actual result: well-typed@]@ ";
             false
         end
@@ -77,15 +25,15 @@ let run_test (label, src, expected) =
         | None ->
             printf "@[<v2>test %s: failed@ " label;
             printf "expected result: well-typed@ ";
-            printf "actual result: %a@]@ " pp_error exn;
+            printf "actual result: %a@]@ " Pretty.pp_error exn;
             false
         | Some exn' when exn' = exn ->
             printf "test %s: passed@ " label;
             true
         | Some exn' ->
             printf "@[<v2> test %s: failed@ " label;
-            printf "expected result: %a@ " pp_error exn';
-            printf "actual result: %a@]@ " pp_error exn;
+            printf "expected result: %a@ " Pretty.pp_error exn';
+            printf "actual result: %a@]@ " Pretty.pp_error exn;
             false
 
 
@@ -406,15 +354,15 @@ let tests = Access.[
 
     ( "tuple/distinct-move"
     , "let t = (1, 2);
-       let x = t.0;
-       let y = t.1;
+       let x = t.1;
+       let y = t.2;
        let _ = x;
        0"
     , None );
     ( "tuple/distinct-mut"
     , "let t = (1, 2);
-       let m0 = &mut t.0;
-       let m1 = &mut t.1;
+       let m0 = &mut t.1;
+       let m1 = &mut t.2;
        let _ = m0;
        0"
     , None );
@@ -429,14 +377,14 @@ let tests = Access.[
     , "let x = 1;
        let t = (1, &mut x);
        let _ = x;
-       let _ = t.0;
+       let _ = t.1;
        0"
     , None );
     ( "tuple/mut-whole-remut-field"
     , "let x = 1;
        let t = (1, &mut x);
        let m = &mut t;
-       let _ = &mut *t.1;
+       let _ = &mut *t.2;
        let _ = m;
        0"
     , access_dead_path (OpMove("m", []))
@@ -444,8 +392,8 @@ let tests = Access.[
     ( "tuple/remut-distinct"
     , "let t = (1, 2);
        let m = &mut t;
-       let m0 = &mut (*m).0;
-       let m1 = &mut (*m).1;
+       let m0 = &mut (*m).1;
+       let m1 = &mut (*m).2;
        let _ = m0;
        0"
     , None );
