@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
+        <link rel="stylesheet" href="style.css"></link>
         <script type="text/javascript" src="checker.js"></script>
         <script type="text/javascript">
             function checkProg() {
@@ -36,76 +37,15 @@
                 });
             });
         </script>
-        <style>
-            html {
-                height: 100%;
-            }
-            body {
-                height: 85%;
-            }
-
-            #titleBar {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            #runButton {
-                padding: 0.5em 1em 0.5em 1em;
-                font-size: 16pt;
-            }
-
-            #mainHeader {
-                padding-right: 1em;
-            }
-
-            #mainDiv {
-                display: flex;
-                flex-direction: row;
-                height: 100%;
-            }
-
-            #playground {
-                display: flex;
-                flex-direction: column;
-                flex: 2;
-            }
-
-            #editor {
-                padding: 1em;
-                height: 50%;
-            }
-
-            #outputArea {
-                border: 1px solid;
-                padding: 1em 1em 1em 1em;
-                height: 50%;
-            }
-
-            #outputContent {
-                text-align: left;
-                margin: 1em;
-            }
-
-            #helpArea {
-                padding: 1em 1em 1em 1em;
-                border: 1px solid;
-                flex: 2;
-            }
-
-            #helpText {
-                width: 100%;
-                height: 100%;
-                border: none;
-            }
-        </style>
     </head>
     <body>
-        <div id="titleBar">
-            <button id="runButton" onclick="checkProg()">RUN</button>
-            <select id="selectExample">
-                <option value="">Select Example</option>
-            </select>
+        <div class="titleBar">
+            <div>
+                <button class="menuItem" onclick="checkProg()">RUN</button>
+                <select id="selectExample" class="menuItem">
+                    <option value="">Select Example</option>
+                </select>
+            </div>
             <h1 id="mainHeader">Borrow Checker Demo</h1>
         </div>
         <div id="mainDiv">

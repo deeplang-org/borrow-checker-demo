@@ -1,0 +1,75 @@
+:root {
+    --main-bg: #808080;
+    --main-fg: #FFFFFF;
+    --alt-bg: #404040;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 85%;
+}
+
+.titleBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0em 1em;
+    background-color: var(--alt-bg);
+}
+
+.menuItem {
+    padding: 0.5em 1em 0.5em 1em;
+    font-size: 16pt;
+    background-color: var(--main-bg);
+    color: var(--main-fg);
+    border: none;
+    border-radius: 10pt;
+}
+
+#mainHeader {
+    padding-right: 1em;
+    color: var(--main-fg);
+}
+
+#mainDiv {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+#playground {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+}
+
+#editor {
+    padding: 1em;
+    height: 50%;
+}
+
+#outputArea {
+    border: 1px solid;
+    padding: 1em 1em 1em 1em;
+    height: 50%;
+}
+
+#outputContent {
+    text-align: left;
+    margin: 1em;
+}
+
+#helpArea {
+    padding: 1em 1em 1em 1em;
+    border: 1px solid;
+    flex: 2;
+}
+
+#helpText {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
