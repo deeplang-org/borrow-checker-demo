@@ -6,3 +6,5 @@ _build/
 
 .direnv
 .envrc
+
+demo/checker.js
