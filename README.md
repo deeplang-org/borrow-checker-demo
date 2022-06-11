@@ -23,6 +23,8 @@ To build this repository, do one of the following:
 You can play with the demo in `demo/demo.html` afterwards.
 - `make doc`, to build the API doc.
 
+The HTML demo is also hosted on <https://guest0x0.xyz/deeplang-borrow-checker-demo/demo.html>.
+You can play with it online there.
 
 ## Document
 API document is WIP.
