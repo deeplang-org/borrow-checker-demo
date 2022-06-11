@@ -7,10 +7,11 @@
 }
 
 let dex_digits = ['0'-'9']
-let lowercase = ['a'-'z']
-let uppercase = ['A'-'Z']
+let lowercase  = ['a'-'z']
+let uppercase  = ['A'-'Z']
 let ident_char = '_' | dex_digits | lowercase | uppercase
-let blank = [' ' '\t' '\n' '\r']
+let newline    = ['\n' '\r']
+let blank      = [' ' '\t' '\n' '\r']
 
 rule token = parse
     | eof    { EOF }
@@ -31,3 +32,15 @@ rule token = parse
     | '*' { STAR }
     | '=' { EQ }
     | ":=" { COLONEQ }
+    | "//" { comment_line lexbuf }
+    | "/*" { comment_block lexbuf }
+
+and comment_line = parse
+    | eof     { EOF }
+    | newline { token lexbuf }
+    | _       { comment_line lexbuf }
+
+and comment_block = parse
+    | eof  { failwith "unclosed comment block" }
+    | "*/" { token lexbuf }
+    | _    { comment_block lexbuf }

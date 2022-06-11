@@ -510,5 +510,19 @@ let examples = Access.[|
       ; "let _ = i2;"
       ; "0" ]
     , access_dead_path (OpMove("i2", [])) (OpMove("y", [])) );
-|] |> Array.map (fun (name, lines, expected) ->
-                (name, String.concat "\n" lines, expected))
+|] |> Array.map @@ fun (name, lines, expected) ->
+    let expected_msg =
+        let open Format in
+        let buf = Buffer.create 50 in
+        let fmt = formatter_of_buffer buf in
+        begin match expected with
+        | Some err ->
+            fprintf fmt "@[<v>/* expected result: %a */@]" Pretty.pp_error err
+        | None ->
+            fprintf fmt "/* expected result: well typed */"
+        end;
+        pp_print_flush fmt ();
+        Bytes.to_string (Buffer.to_bytes buf)
+    in
+    let lines = ("// " ^ name) :: lines @ [expected_msg] in
+    (name, String.concat "\n" lines, expected)
