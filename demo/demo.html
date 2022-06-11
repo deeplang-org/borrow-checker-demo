@@ -11,6 +11,30 @@
                 const margin = Math.round(output.clientWidth / fontWidth.clientWidth);
                 output.innerText = checker.run(margin, editor.value);
             }
+
+            function loadExample(name) {
+                const editor = document.getElementById("editor");
+                const src = checker.getExample(name);
+                if (src != null)
+                    editor.value = src;
+            }
+
+            window.addEventListener('DOMContentLoaded', function (event) {
+                const example_sel = document.getElementById("selectExample");
+                for (const name of checker.exampleNames()) {
+                    var opt = document.createElement("option");
+                    opt.value = name;
+                    opt.text = name;
+                    example_sel.add(opt);
+                }
+
+                example_sel.addEventListener('change', function (event) {
+                    if (example_sel.selectedIndex > 0) {
+                        loadExample(event.target.value);
+                    }
+                    example_sel.selectedIndex = 0;
+                });
+            });
         </script>
         <style>
             html {
@@ -79,6 +103,9 @@
     <body>
         <div id="titleBar">
             <button id="runButton" onclick="checkProg()">RUN</button>
+            <select id="selectExample">
+                <option value="">Select Example</option>
+            </select>
             <h1 id="mainHeader">Borrow Checker Demo</h1>
         </div>
         <div id="mainDiv">

@@ -1,6 +1,6 @@
 (library
  (name checker)
- (modules Access Type Expr Parser Lexer Pretty))
+ (modules Access Type Expr Parser Lexer Pretty Examples))
 
 (ocamllex Lexer)
 (ocamlyacc Parser)
